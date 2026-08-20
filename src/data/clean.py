@@ -11,31 +11,43 @@ def clean_market_data(
     Create a model-usable dataset from normalized market data.
 
     Rules:
-    1. Remove future-dated records.
-    2. Preserve historical OHLC anomalies.
-    3. Add data-quality flags.
+    1. Remove candles that have not completed.
+    2. Flag historical OHLC anomalies.
+    3. Preserve data-quality metadata.
     """
 
     df = pd.read_parquet(input_path)
+
+    # ---------------------------------------------------------------
+    # Timestamp normalization
+    # ---------------------------------------------------------------
 
     df["timestamp"] = pd.to_datetime(
         df["timestamp"],
         utc=True,
     )
 
+    df["available_at"] = pd.to_datetime(
+        df["available_at"],
+        utc=True,
+    )
+
     # ---------------------------------------------------------------
-    # Future data
+    # Determine whether candle is complete
     # ---------------------------------------------------------------
 
     now_utc = pd.Timestamp.now(tz="UTC")
 
-    df["future_data"] = (
-        df["timestamp"] > now_utc
+    df["candle_complete"] = (
+        df["available_at"] <= now_utc
     )
 
-    # Remove future records
+    # ---------------------------------------------------------------
+    # Remove incomplete candles
+    # ---------------------------------------------------------------
+
     df = df[
-        ~df["future_data"]
+        df["candle_complete"]
     ].copy()
 
     # ---------------------------------------------------------------
@@ -56,6 +68,10 @@ def clean_market_data(
         df["invalid_high"]
         | df["invalid_low"]
     )
+
+    df["data_type"] = df["data_type"].astype(str)
+    df["instrument"] = df["instrument"].astype(str)
+    df["provider"] = df["provider"].astype(str)
 
     # ---------------------------------------------------------------
     # Sort

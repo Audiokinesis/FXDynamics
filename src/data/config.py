@@ -5,11 +5,14 @@ from pathlib import Path
 # Project paths
 # -------------------------------------------------------------------
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+PROJECT_ROOT = Path(r"C:/Users/mdesc/Documents/Projects/FXDynamics/src/data/config.py").resolve().parents[2]
 
 DATA_DIR = PROJECT_ROOT / "data"
+
 RAW_DATA_DIR = DATA_DIR / "raw"
+
 INTERIM_DATA_DIR = DATA_DIR / "interim"
+
 PROCESSED_DATA_DIR = DATA_DIR / "processed"
 
 
@@ -18,42 +21,75 @@ PROCESSED_DATA_DIR = DATA_DIR / "processed"
 # -------------------------------------------------------------------
 
 INSTRUMENTS = {
+
     "EURUSD": {
-        "provider": "yfinance",
+        "provider": "yahoo",
         "symbol": "EURUSD=X",
         "asset_class": "fx",
+        "data_type": "price",
     },
+
     "DXY": {
-        "provider": "yfinance",
+        "provider": "yahoo",
         "symbol": "DX-Y.NYB",
         "asset_class": "index",
+        "data_type": "index",
     },
+
     "US2Y": {
-        "provider": "yfinance",
-        "symbol": "^UST2Y",
+        "provider": "fred",
+        "series_id": "DGS2",
         "asset_class": "rates",
+        "data_type": "yield",
     },
-    "DE2Y": {
-        "provider": "yfinance",
-        "symbol": "^DE2Y",
-        "asset_class": "rates",
-    },
+
     "US10Y": {
-        "provider": "yfinance",
-        "symbol": "^TNX",
+        "provider": "fred",
+        "series_id": "DGS10",
         "asset_class": "rates",
+        "data_type": "yield",
     },
 }
 
 
 # -------------------------------------------------------------------
-# Timeframes
+# Yahoo timeframes
 # -------------------------------------------------------------------
 
-TIMEFRAMES = [
-    "5m",
-    "15m",
-    "1h",
-    "4h",
-    "1d",
-]
+TIMEFRAMES = {
+
+    "5m": {
+        "provider_interval": "5m",
+        "provider_period": "5d",
+    },
+
+    "15m": {
+        "provider_interval": "15m",
+        "provider_period": "60d",
+    },
+
+    "1h": {
+        "provider_interval": "1h",
+        "provider_period": "730d",
+    },
+
+    "4h": {
+        "provider_interval": "1h",
+        "provider_period": "730d",
+        "resample": "4h",
+    },
+
+    "1d": {
+        "provider_interval": "1d",
+        "provider_period": "max",
+    },
+}
+
+
+# -------------------------------------------------------------------
+# FRED configuration
+# -------------------------------------------------------------------
+
+FRED_START_DATE = "2000-01-01"
+
+FRED_END_DATE = None
