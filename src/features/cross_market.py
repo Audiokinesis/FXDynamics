@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import pandas as pd
-
+import numpy as np
 
 def add_cross_market_features(
     df: pd.DataFrame,
@@ -29,7 +29,10 @@ def add_cross_market_features(
 
     df["EURUSD_return_to_vol"] = (
         df["EURUSD_ret_1"]
-        / df["EURUSD_vol_48"]
+        / df["EURUSD_vol_48"].replace(
+        0,
+        np.nan,
+        )
     )
 
     # ---------------------------------------------------------------

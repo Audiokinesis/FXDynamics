@@ -120,6 +120,25 @@ if __name__ == "__main__":
         base
     )
 
+
+    output_dir = (
+    PROJECT_ROOT
+    / "data"
+    / "processed"
+    / "features"
+    )
+
+    output_dir.mkdir(
+    parents=True,
+    exist_ok=True,
+    )
+
+    features.to_parquet(
+    output_dir
+    / "EURUSD_feature_matrix_5m.parquet",
+    index=False,
+    )
+
     print(
         features.tail(10).to_string(
             index=False
@@ -128,3 +147,34 @@ if __name__ == "__main__":
 
     print("\nFeature count:")
     print(len(features.columns))
+
+    print(
+    features[
+        [
+            "prediction_time",
+            "rates_available_at",
+            "US2Y_yield",
+            "US2Y_change_1d",
+            "US10Y_yield",
+            "US10Y_change_1d",
+            "US10Y_US2Y_spread",
+        ]
+    ].tail(20).to_string(index=False)
+    )
+    violations = features[
+    features["rates_available_at"]
+    > features["prediction_time"]
+    ]
+
+    print("Rate leakage rows:", len(violations))
+
+    from src.features.quality import feature_quality_report
+
+    report = feature_quality_report(
+        features,
+        "target_next_5m_return",
+    )
+
+    print(
+        report.to_string(index=False)
+    )
